@@ -78,7 +78,4 @@ module.exports = {
   deleteFile,
 };
 
-module.exports = {
-  getOrderData,
-  deleteFile,
-};
+

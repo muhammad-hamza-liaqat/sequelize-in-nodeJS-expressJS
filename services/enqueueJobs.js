@@ -1,4 +1,3 @@
-// services/enqueueJobs.js
 const { Queue } = require('bull');
 
 const queue = new Queue('getOrderDataQueue', {
@@ -8,12 +7,11 @@ const queue = new Queue('getOrderDataQueue', {
   },
 });
 
-// Assume you have startDate and endDate in your req.query
-const startDate = process.argv[2];
-const endDate = process.argv[3];
-
-// Enqueue a job to execute the getOrderData function with dynamic parameters
-(async () => {
-  const job = await queue.add('getOrderDataJob', { startDate, endDate });
+async function addJob(jobName, data) {
+  const job = await queue.add(jobName, data);
   console.log(`Job enqueued with ID: ${job.id}`);
-})();
+}
+
+module.exports = {
+  addJob,
+};

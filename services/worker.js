@@ -1,13 +1,13 @@
+const { Worker } = require("bull");
+const { getOrderData, deleteFile } = require("../controller/orderController");
 
-console.log('Node.js version:', process.version);
-const { Worker } = require('bull');
-const { getOrderData } = require('../controller/orderController');
-
-const worker = new Worker('getOrderDataQueue', async job => {
+const worker = new Worker("getOrderDataQueue", async (job) => {
   try {
-    console.log(`Processing job ${job.id} with data:`, job.data);
-
-    await getOrderData(job.data);
+    if (job.name === "getOrderDataJob") {
+      await getOrderData(job.data);
+    } else if (job.name === "deleteFileJob") {
+      await deleteFile(job.data);
+    }
 
     console.log(`Job ${job.id} completed.`);
   } catch (error) {
@@ -15,6 +15,7 @@ const worker = new Worker('getOrderDataQueue', async job => {
   }
 });
 
+// Connect and start the worker
 (async () => {
   await worker.connect();
   worker.workerCleanup(); 

@@ -19,14 +19,14 @@ module.exports = async function getOrderData(req, res) {
     
     // console.log("Fetched data:", data);
 
-    // Extract header using the model attributes
+    
     const header = Object.keys(orderModel.getAttributes());
 
-    // Generate a unique ID for the CSV file
+
     const fileId = uuidv4();
     const csvFilePath = path.join(__dirname, '../uploads', `${fileId}.csv`);
 
-    // Write data to CSV file
+
     const csvWriter = createCsvWriter({
       path: csvFilePath,
       header: header,

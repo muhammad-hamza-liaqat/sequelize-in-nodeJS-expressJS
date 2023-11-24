@@ -9,7 +9,7 @@ module.exports = async function getOrderData(req, res) {
   try {
     const { startDate, endDate } = req.query;
 
-    // Fetch data from the database
+    
     const data = await orderModel.findAll({
       where: {
         orderDate: {
@@ -18,16 +18,16 @@ module.exports = async function getOrderData(req, res) {
       },
     });
 
-    // Generate a unique ID for the CSV file
+    
     const fileId = uuidv4();
     // const csvFilePath = `../uploads/${fileId}.csv`;
     const csvFilePath = path.join(__dirname, '../uploads', `${fileId}.csv`);
 
 
-    // Extract header from the first instance in the data array
+    
     const header = Object.keys(data.length > 0 ? data[0].dataValues : {});
 
-    // Write data to CSV file
+    
     const csvWriter = createCsvWriter({
       path: csvFilePath,
       header: header,

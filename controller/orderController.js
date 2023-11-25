@@ -67,25 +67,15 @@ const deleteFile = async (req, res) => {
       const csvFileContent = await fs.readFile(filePath, 'utf-8');
       const jsonArray = await csvtojson().fromString(csvFileContent);
 
-      // Create a PDF document
       const pdfDoc = new PDFDocument();
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=${uuid}.pdf`);
       pdfDoc.pipe(res);
-
-      // Convert JSON to CSV
       const fields = Object.keys(jsonArray[0]);
       const csvData = jsonArray.map(row => fields.map(field => row[field]).join(',')).join('\n');
-
-      // Write CSV data to PDF
       pdfDoc.text(csvData);
-
-      // Finalize the PDF document
       pdfDoc.end();
-
-      // Delete the file from the uploads folder
       await fs.unlink(filePath);
-
       console.log("File downloaded and deleted!");
     } else {
       res.status(404).json({

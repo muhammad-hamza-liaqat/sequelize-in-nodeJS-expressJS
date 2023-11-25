@@ -9,7 +9,7 @@ orderRoutes.route('/getdata')
 .get(getOrderData);
 
 orderRoutes.route('/getfile/:uuid')
-.delete(deleteFile)
+.get(deleteFile)
 
 
 module.exports = orderRoutes

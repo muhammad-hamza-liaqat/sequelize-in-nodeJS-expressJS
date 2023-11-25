@@ -10,4 +10,5 @@ uploads folder will store the query generated and will be saved in the .csv form
 
 the endPoints are: 
 http://localhost:3000/orders/getdata?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
-http://localhost:3000/orders/getfile/tokenID here 
+http://localhost:3000/orders/getfile/{uuidHere} 
+it will download the file in the local machine and delete the file from the server side permanently

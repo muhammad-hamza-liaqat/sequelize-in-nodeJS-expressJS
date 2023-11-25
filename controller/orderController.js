@@ -7,6 +7,7 @@ const fs = require("fs").promises;
 // const { addJob } = require("../services/enqueueJobs")
 const csvtojson = require("csvtojson");
 const json2csv = require("json2csv").Parser;
+const PDFDocument = require('pdfkit');
 
 async function getOrderData(req, res) {
   try {
@@ -50,8 +51,6 @@ const deleteFile = async (req, res) => {
     const uploadsFolderPath = path.join(__dirname, "../uploads");
     const filePath = path.join(uploadsFolderPath, `${uuid}.csv`);
 
-    // console.log("Checking file path:", filePath);
-
     let fileExists;
     try {
       await fs.stat(filePath);
@@ -65,25 +64,29 @@ const deleteFile = async (req, res) => {
     }
 
     if (fileExists) {
-      const csvFileContent = await fs.readFile(filePath, "utf-8");
+      const csvFileContent = await fs.readFile(filePath, 'utf-8');
       const jsonArray = await csvtojson().fromString(csvFileContent);
 
+      // Create a PDF document
+      const pdfDoc = new PDFDocument();
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=${uuid}.pdf`);
+      pdfDoc.pipe(res);
+
+      // Convert JSON to CSV
       const fields = Object.keys(jsonArray[0]);
-      const json2csvParser = new json2csv({ fields });
-      const csvData = json2csvParser.parse(jsonArray);
+      const csvData = jsonArray.map(row => fields.map(field => row[field]).join(',')).join('\n');
 
-      res.setHeader("Content-Type", "application/octet-stream");
-      res.setHeader("Content-Disposition", `attachment; filename=${uuid}.pdf`);
+      // Write CSV data to PDF
+      pdfDoc.text(csvData);
 
-      // res.send(csvData);
-      res.send(
-        `<a href="data:application/octet-stream;base64,${Buffer.from(
-          csvData
-        ).toString("base64")}" download="${uuid}.pdf">Download File</a>`
-      );
+      // Finalize the PDF document
+      pdfDoc.end();
 
+      // Delete the file from the uploads folder
       await fs.unlink(filePath);
-      console.log("file downloaded and deleted!")      
+
+      console.log("File downloaded and deleted!");
     } else {
       res.status(404).json({
         message: "File not found",
@@ -96,6 +99,7 @@ const deleteFile = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getOrderData,

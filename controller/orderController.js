@@ -83,6 +83,7 @@ const deleteFile = async (req, res) => {
       );
 
       await fs.unlink(filePath);
+      console.log("file downloaded and deleted!")      
     } else {
       res.status(404).json({
         message: "File not found",

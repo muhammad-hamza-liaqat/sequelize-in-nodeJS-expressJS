@@ -3,8 +3,10 @@ const orderModel = require("../models/orderModel");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs").promises;
 // const { addJob } = require("../services/enqueueJobs")
+const csvtojson = require("csvtojson");
+const json2csv = require("json2csv").Parser;
 
 async function getOrderData(req, res) {
   try {
@@ -45,28 +47,49 @@ async function getOrderData(req, res) {
 const deleteFile = async (req, res) => {
   try {
     const { uuid } = req.params;
-    const filePath = path.join(__dirname, "../uploads", `${uuid}.csv`);
+    const uploadsFolderPath = path.join(__dirname, "../uploads");
+    const filePath = path.join(uploadsFolderPath, `${uuid}.csv`);
 
-    // Log the file path before checking
-    console.log("Checking file path:", filePath);
+    // console.log("Checking file path:", filePath);
 
-    // Checking if the file exists or not
-    const fileExists = fs.existsSync(filePath);
+    let fileExists;
+    try {
+      await fs.stat(filePath);
+      fileExists = true;
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        fileExists = false;
+      } else {
+        throw error;
+      }
+    }
 
     if (fileExists) {
-      // Using fs.promises.unlink to make the operation asynchronous
-      await fs.promises.unlink(filePath);
+      const csvFileContent = await fs.readFile(filePath, "utf-8");
+      const jsonArray = await csvtojson().fromString(csvFileContent);
 
-      res.json({
-        message: "File deleted successfully",
-      });
+      const fields = Object.keys(jsonArray[0]);
+      const json2csvParser = new json2csv({ fields });
+      const csvData = json2csvParser.parse(jsonArray);
+
+      res.setHeader("Content-Type", "application/octet-stream");
+      res.setHeader("Content-Disposition", `attachment; filename=${uuid}.pdf`);
+
+      // res.send(csvData);
+      res.send(
+        `<a href="data:application/octet-stream;base64,${Buffer.from(
+          csvData
+        ).toString("base64")}" download="${uuid}.pdf">Download File</a>`
+      );
+
+      await fs.unlink(filePath);
     } else {
       res.status(404).json({
         message: "File not found",
       });
     }
   } catch (error) {
-    console.error("Error deleting file:", error);
+    console.error("Error downloading and deleting file:", error);
     res.status(500).json({
       message: "Internal server error",
     });
@@ -77,5 +100,3 @@ module.exports = {
   getOrderData,
   deleteFile,
 };
-
-

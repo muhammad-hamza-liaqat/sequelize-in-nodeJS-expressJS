@@ -1,4 +1,4 @@
-const { Queue } = require('bull');
+const  Queue  = require('bull');
 
 const queue = new Queue('getOrderDataQueue', {
   redis: {

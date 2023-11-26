@@ -4,7 +4,10 @@ const PaymentModel = require("../models/paymentModel");
 
 const customerDetails = async (req, res) => {
   try {
-    const customerPayments = await CustomerModel.findAll({
+    const { customerNumber } = req.params;
+
+    const customerPayments = await CustomerModel.findOne({
+        where : { customerNumber}, 
       raw: true,
       //   include: [{ model: PaymentModel }],
       logging: console.log,

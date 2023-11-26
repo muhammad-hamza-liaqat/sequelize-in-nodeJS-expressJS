@@ -10,7 +10,6 @@ const customerDetails = async (req, res) => {
 
     const customerPayments = await CustomerModel.findOne({
       where: { customerNumber },
-      raw: true,
       include: [{ model: PaymentModel, attributes: ['paymentDate', 'amount'] }],
     });
 

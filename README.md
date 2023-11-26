@@ -14,7 +14,7 @@ http://localhost:3000/orders/getfile/{uuidHere}
 it will download the file in the local machine and delete the file from the server side permanently
 
 
-http://localhost:3000/details/customer  => end point for the details of the customer excluded
+<!-- http://localhost:3000/details/customer  => end point for the details of the customer excluded -->
 
 
 http://localhost:3000/details/customer/:customerNumber => end point to get the details of the one customer

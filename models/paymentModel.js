@@ -1,6 +1,6 @@
+// paymentModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require("../database/connection");
-// adding the customer model here
 const Customer = require("./customerModel");
 
 const Payment = sequelize.define('Payment', {
@@ -27,7 +27,6 @@ const Payment = sequelize.define('Payment', {
   timestamps: false,
 });
 
-// the customer and payment has the relationship, customerNumber foreign key here.
 Payment.belongsTo(Customer, {
   foreignKey: 'customerNumber',
   targetKey: 'customerNumber',

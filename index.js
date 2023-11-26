@@ -2,12 +2,14 @@ const express = require("express");
 const app = express();
 const connection = require("./database/connection");
 const ordersR = require("./routes/orderRoute");
+const detailR = require("./routes/detailRoute");
 
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/orders", ordersR);
+app.use("/details", detailR);
 
 app.listen(3000, () => {
   console.log("server running");

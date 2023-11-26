@@ -12,3 +12,6 @@ the endPoints are:
 http://localhost:3000/orders/getdata?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
 http://localhost:3000/orders/getfile/{uuidHere} 
 it will download the file in the local machine and delete the file from the server side permanently
+
+
+http://localhost:3000/details/customer  => end point for the details of the customer

@@ -16,7 +16,13 @@ const customerDetails = async (req, res) => {
 
     if (customerPayments) {
       const pdfDoc = new PDFDocument();
-      pdfDoc.pipe(fs.createWriteStream('customer_details.pdf'));
+
+      // Set response headers for file download
+      res.setHeader('Content-Disposition', 'attachment; filename=customer_details.pdf');
+      res.setHeader('Content-Type', 'application/pdf');
+
+      // Pipe the PDF content directly to the response
+      pdfDoc.pipe(res);
 
       // Add content to the PDF
       pdfDoc.text(`Customer Number: ${customerPayments.customerNumber}`);
@@ -33,14 +39,8 @@ const customerDetails = async (req, res) => {
         pdfDoc.text('No payments found.');
       }
 
-      // Finalize the PDF and send it as a response
+      // Finalize the PDF and end the response
       pdfDoc.end();
-      const fileStream = fs.createReadStream('customer_details.pdf');
-
-      res.setHeader('Content-Disposition', 'attachment; filename=customer_details.pdf');
-      res.setHeader('Content-Type', 'application/pdf');
-
-      fileStream.pipe(res);
     } else {
       res.status(404).send({ message: "Customer not found" });
     }

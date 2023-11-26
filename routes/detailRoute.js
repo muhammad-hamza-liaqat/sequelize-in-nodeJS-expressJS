@@ -4,9 +4,6 @@ const detailRoutes = express.Router();
 const customerDetail = require("../controller/customerController")
 
 detailRoutes.route('/customer/:customerNumber')
-.get((req,res)=>{
-    res.end("customer end point!")
-})
-.post(customerDetail)
+.get(customerDetail)
 
 module.exports = detailRoutes;

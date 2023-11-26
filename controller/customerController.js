@@ -1,7 +1,7 @@
 const { Model } = require("sequelize");
 const CustomerModel = require("../models/customerModel");
 const PaymentModel = require("../models/paymentModel");
-const { createObjectCsvWriter } = require('csv-writer');
+const PDFDocument = require('pdfkit');
 const fs = require('fs');
 
 const customerDetails = async (req, res) => {
@@ -15,55 +15,30 @@ const customerDetails = async (req, res) => {
     });
 
     if (customerPayments) {
-      const paymentDates = customerPayments.Payments ? customerPayments.Payments.map(payment => payment.paymentDate).join(',') : '';
-      const paymentAmounts = customerPayments.Payments ? customerPayments.Payments.map(payment => payment.amount).join(',') : '';
+      const pdfDoc = new PDFDocument();
+      pdfDoc.pipe(fs.createWriteStream('customer_details.pdf'));
 
-      const csvWriter = createObjectCsvWriter({
-        path: 'customer_details.csv',
-        header: [
-          { id: 'customerNumber', title: 'Customer Number' },
-          { id: 'customerName', title: 'Customer Name' },
-          { id: 'contactLastName', title: 'Contact Last Name' },
-          { id: 'contactFirstName', title: 'Contact First Name' },
-          { id: 'phone', title: 'Phone' },
-          { id: 'addressLine1', title: 'Address Line 1' },
-          { id: 'addressLine2', title: 'Address Line 2' },
-          { id: 'city', title: 'City' },
-          { id: 'state', title: 'State' },
-          { id: 'postalCode', title: 'Postal Code' },
-          { id: 'country', title: 'Country' },
-          { id: 'salesRepEmployeeNumber', title: 'Sales Rep Employee Number' },
-          { id: 'creditLimit', title: 'Credit Limit' },
-          { id: 'paymentDate', title: 'Payment Date' },
-          { id: 'amount', title: 'Amount' },
-        ],
-      });
+      // Add content to the PDF
+      pdfDoc.text(`Customer Number: ${customerPayments.customerNumber}`);
+      pdfDoc.text(`Customer Name: ${customerPayments.customerName}`);
+      pdfDoc.text(`Sales Rep Employee Number: ${customerPayments.salesRepEmployeeNumber}`);
+      pdfDoc.text(`Credit Limit: ${customerPayments.creditLimit}`);
 
-      const csvData = [
-        {
-          customerNumber: customerPayments.customerNumber,
-          customerName: customerPayments.customerName,
-          contactLastName: customerPayments.contactLastName,
-          contactFirstName: customerPayments.contactFirstName,
-          phone: customerPayments.phone,
-          addressLine1: customerPayments.addressLine1,
-          addressLine2: customerPayments.addressLine2,
-          city: customerPayments.city,
-          state: customerPayments.state,
-          postalCode: customerPayments.postalCode,
-          country: customerPayments.country,
-          salesRepEmployeeNumber: customerPayments.salesRepEmployeeNumber,
-          creditLimit: customerPayments.creditLimit,
-          paymentDate: paymentDates,
-          amount: paymentAmounts,
-        },
-      ];
+      if (customerPayments.Payments && customerPayments.Payments.length > 0) {
+        pdfDoc.text('Payments:');
+        customerPayments.Payments.forEach(payment => {
+          pdfDoc.text(`- Payment Date: ${payment.paymentDate}, Amount: ${payment.amount}`);
+        });
+      } else {
+        pdfDoc.text('No payments found.');
+      }
 
-      await csvWriter.writeRecords(csvData);
-      const fileStream = fs.createReadStream('customer_details.csv');
+      // Finalize the PDF and send it as a response
+      pdfDoc.end();
+      const fileStream = fs.createReadStream('customer_details.pdf');
 
-      res.setHeader('Content-Disposition', 'attachment; filename=customer_details.csv');
-      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=customer_details.pdf');
+      res.setHeader('Content-Type', 'application/pdf');
 
       fileStream.pipe(res);
     } else {

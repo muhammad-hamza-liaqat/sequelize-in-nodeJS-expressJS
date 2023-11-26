@@ -1,6 +1,7 @@
 // customerModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require("../database/connection");
+const Payment = require('./paymentModel');
 
 const Customer = sequelize.define('Customer', {
   customerNumber: {
@@ -60,5 +61,8 @@ const Customer = sequelize.define('Customer', {
   tableName: "customers",
   timestamps: false,
 });
+
+// Define the association with PaymentModel
+Customer.hasMany(Payment, { foreignKey: "customerNumber" });
 
 module.exports = Customer;

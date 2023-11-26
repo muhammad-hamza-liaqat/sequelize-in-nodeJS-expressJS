@@ -1,4 +1,4 @@
-# sequelize-in-nodeJS-expressJS
+# sequelize-in-nodeJS-expressJShttp://localhost:3000/details/customer/:customerNumber
 
 this functionality of this project is to fetch the data from the order table in the database using sequelize ORM in nodeJS and expressJS. 
 the schema of DB is made under the models folder.

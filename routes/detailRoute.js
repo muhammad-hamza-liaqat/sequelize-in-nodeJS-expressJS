@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const detailRoutes = express.Router();
-const customerDetails = require("../controller/customerController")
+const customerDetail = require("../controller/customerController")
 
 detailRoutes.route('/customer/:customerNumber')
 .get((req,res)=>{
     res.end("customer end point!")
 })
-.post(customerDetails)
+.post(customerDetail)
 
 module.exports = detailRoutes;

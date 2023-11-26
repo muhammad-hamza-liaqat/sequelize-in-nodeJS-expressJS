@@ -3,6 +3,7 @@ const app = express();
 const connection = require("./database/connection");
 const ordersR = require("./routes/orderRoute");
 const detailR = require("./routes/detailRoute");
+require("./models/association")
 
 // middleware
 app.use(express.json());

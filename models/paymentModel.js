@@ -1,7 +1,6 @@
 // paymentModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require("../database/connection");
-const Customer = require("./customerModel");
 
 const Payment = sequelize.define('Payment', {
   customerNumber: {
@@ -19,17 +18,12 @@ const Payment = sequelize.define('Payment', {
     allowNull: false,
   },
   amount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.FLOAT,
     allowNull: true,
   },
 }, {
   tableName: "payments",
   timestamps: false,
-});
-
-Payment.belongsTo(Customer, {
-  foreignKey: 'customerNumber',
-  targetKey: 'customerNumber',
 });
 
 module.exports = Payment;

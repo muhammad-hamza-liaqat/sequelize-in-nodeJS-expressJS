@@ -3,6 +3,7 @@ const app = express();
 const connection = require("./database/connection");
 const ordersR = require("./routes/orderRoute");
 const detailR = require("./routes/detailRoute");
+const mergeR = require("./routes/merge")
 require("./models/association")
 
 // middleware
@@ -11,6 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/orders", ordersR);
 app.use("/details", detailR);
+app.use("/merge", mergeR);
+
 
 app.listen(3000, () => {
   console.log("server running");

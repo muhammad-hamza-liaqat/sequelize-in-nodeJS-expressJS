@@ -4,7 +4,7 @@ const CustomerModel = require("../models/customerModel");
 const EmployeeModel = require("../models/employeeModel");
 const OfficeModel = require("../models/officeModel");
 const OrderModel = require("../models/orderModel");
-const OrderDetails = require("../models/orderDetails");
+const OrderDetailsModel = require("../models/orderDetails");
 const ProductModel = require("../models/productModel");
 const ProductLineModel = require("../models/productLineModel");
 const PaymentModel = require("../models/paymentModel");
@@ -18,19 +18,44 @@ const customerDetails = async (req, res) => {
   try {
     const { customerNumber } = req.params;
 
-    const customerPayments = await CustomerModel.findOne({
-      where: { customerNumber },
-      include: [{ model: PaymentModel, attributes: ['paymentDate', 'amount'] }],
-    });
+const customerPayments = await CustomerModel.findOne({
+  where: { customerNumber },
+  include: [
+    {
+      model: PaymentModel,
+      attributes: ['paymentDate', 'amount']
+    },
+    {
+      model: OrderModel,
+      attributes: ['orderDate', 'shippedDate', 'status'],
+      // include: [
+      //   {
+      //     model: OrderDetailsModel,
+      //     attributes: ['quantityOrdered'] 
+      //   },
+      //   {
+      //     model: ProductModel,
+      //     attributes: ['productName', 'buyPrice'], 
+      //     include: [
+      //       {
+      //         model: ProductLineModel,
+      //         attributes: ['productLine'] 
+      //       }
+      //     ]
+      //   }
+      // ]
+    }
+  ]
+});
+    console.log( customerPayments)
 
     if (customerPayments) {
       const pdfDoc = new PDFDocument();
 
-      // Set response headers for file download
       res.setHeader('Content-Disposition', 'attachment; filename=customer_details.pdf');
       res.setHeader('Content-Type', 'application/pdf');
 
-      // Pipe the PDF content directly to the response
+      
       pdfDoc.pipe(res);
 
       // Add content to the PDF
@@ -38,6 +63,7 @@ const customerDetails = async (req, res) => {
       pdfDoc.text(`Customer Name: ${customerPayments.customerName}`);
       pdfDoc.text(`Sales Rep Employee Number: ${customerPayments.salesRepEmployeeNumber}`);
       pdfDoc.text(`Credit Limit: ${customerPayments.creditLimit}`);
+      pdfDoc.text(`order status: ${OrderModel.status}`);
 
       if (customerPayments.Payments && customerPayments.Payments.length > 0) {
         pdfDoc.text('Payments:');
@@ -47,6 +73,11 @@ const customerDetails = async (req, res) => {
       } else {
         pdfDoc.text('No payments found.');
       }
+      for(let i=0;i<customerPayments.orders.length;i++){
+        pdfDoc.text(`- Payment Date: ${customerPayments.orders[i].status}`);
+      }
+
+     console.log(customerPayments.orders)
 
       // Finalize the PDF and end the response
       pdfDoc.end();

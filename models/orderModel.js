@@ -28,10 +28,11 @@ const Orders = sequelize.define('orders', {
     allowNull: true,  
 },
     customerNumber: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
-},{
+},
+{
     tableName:"orders",
     timestamps:false,
 });

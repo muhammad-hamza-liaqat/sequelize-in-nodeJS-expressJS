@@ -1,6 +1,14 @@
 const { Model } = require("sequelize");
+// adding the more model 
 const CustomerModel = require("../models/customerModel");
+const EmployeeModel = require("../models/employeeModel");
+const OfficeModel = require("../models/officeModel");
+const OrderModel = require("../models/orderModel");
+const OrderDetailModel = require("../models/orderDetails");
+const ProductModel = require("../models/productModel");
+const ProductLineModel = require("../models/productLineModel");
 const PaymentModel = require("../models/paymentModel");
+
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 

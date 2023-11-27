@@ -2,6 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require("../database/connection");
 const Payment = require('./paymentModel');
+const Employee = require("./employeeModel")
 
 const Customer = sequelize.define('Customer', {
   customerNumber: {
@@ -61,8 +62,9 @@ const Customer = sequelize.define('Customer', {
   tableName: "customers",
   timestamps: false,
 });
-
-// Define the association with PaymentModel
-Customer.hasMany(Payment, { foreignKey: "customerNumber" });
+Customer.belongsTo(Employee, {
+  foreignKey: 'salesRepEmployeeNumber', // Assuming this is your foreign key
+  as: 'SalesRep', // You can use this alias in your include options
+});
 
 module.exports = Customer;

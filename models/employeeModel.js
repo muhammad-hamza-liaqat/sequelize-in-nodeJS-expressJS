@@ -46,5 +46,6 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.STRING(50),
     collate: 'latin1_swedish_ci',
   },
-});
+})
+
 module.exports = Employee;

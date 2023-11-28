@@ -42,7 +42,7 @@ const customerDetails = async (req, res) => {
         },
       ],
     });
-    console.log(customerPayments);
+    // console.log(customerPayments);
 
     if (customerPayments) {
       const pdfDoc = new PDFDocument();
@@ -80,18 +80,18 @@ const customerDetails = async (req, res) => {
         }
       }
 
-      console.log(customerPayments.orders);
+      // console.log(customerPayments.orders);
 
       // Finalize the PDF and end the response
       pdfDoc.end();
     } else {
-      res.status(404).send({ message: "Customer not found" });
+      res.status(404).send({ message: "user not found" });
     }
   } catch (err) {
     console.error(err);
     res
       .status(500)
-      .send({ message: "Internal Server Error - customerController" });
+      .send({ message: "Internal Server Error- customerController" });
   }
 };
 

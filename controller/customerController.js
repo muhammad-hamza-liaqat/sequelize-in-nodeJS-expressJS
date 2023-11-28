@@ -27,12 +27,12 @@ const customerDetails = async (req, res) => {
         {
           model: OrderModel,
           attributes: ["orderDate", "shippedDate", "status"],
-          include:[
+          include: [
             {
-              model:OrderDetailsModel,
-              attributes:["quantityOrdered"]
-            }
-          ]
+              model: OrderDetailsModel,
+              attributes: ["quantityOrdered"],
+            },
+          ],
         },
       ],
     });
@@ -58,38 +58,29 @@ const customerDetails = async (req, res) => {
       pdfDoc.text(`Credit Limit: ${customerPayments.creditLimit}`);
       pdfDoc.text(`order status: ${OrderModel.status}`);
 
-      if (customerPayments.Payments && customerPayments.Payments.length > 0) {
-        pdfDoc.text("Payments:");
-        customerPayments.Payments.forEach((payment) => {
-          pdfDoc.text(
-            `- Payment Date: ${payment.paymentDate}, Amount: ${payment.amount}`
-          );
-          
-        });
-      } else {
-        pdfDoc.text("No payments found.");
-      }
-      // for (let i = 0; i < customerPayments.orders.length; i++) {
-      //   pdfDoc.text(`- Payment Date: ${customerPayments.orders[i].status}`);
-      // }
-      // for (let i = 0; i < customerPayments.orders.OrderDetailsModel; i++) {
-      //   pdfDoc.text(`- Payment Date: ${customerPayments.orders.OrderDetailsModel[i].quantityOrdered}`);
-      // }
-
       for (let i = 0; i < customerPayments.orders.length; i++) {
-  const order = customerPayments.orders[i];
+        const order = customerPayments.orders[i];
 
-  pdfDoc.text(`Order Date: ${order.orderDate}, Shipped Date: ${order.shippedDate}, Status: ${order.status}`);
+        // console.log("order console");
+        // let orders1=JSON.stringify(order);
+        // orders1=JSON.parse(orders1)
+        // console.log(orders1)
 
-  if (order.OrderDetailsModel && order.OrderDetailsModel.length > 0) {
-    pdfDoc.text("Order Details:");
-    order.OrderDetailsModel.forEach((orderDetail) => {
-      pdfDoc.text(`- Quantity Ordered: ${orderDetail.quantityOrdered}`);
-    });
-  } else {
-    pdfDoc.text("No order details found for this order.");
-  }
-}
+        pdfDoc.text(
+          `Order Date: ${order.orderDate}, Shipped Date: ${order.shippedDate}, Status: ${order.status}`
+        );
+
+        if (order) {
+          pdfDoc.text("Order Details:");
+          order.orderdetails.forEach((orderDetail) => {
+            // console.log("hello");
+            // console.log(orderDetail);
+            pdfDoc.text(`- Quantity Ordered: ${orderDetail.quantityOrdered}`);
+          });
+        } else {
+          pdfDoc.text(`No order details found for this order ID`);
+        }
+      }
 
       console.log(customerPayments.orders);
 

@@ -66,12 +66,6 @@ const customerDetails = async (req, res) => {
 
       for (let i = 0; i < customerPayments.orders.length; i++) {
         const order = customerPayments.orders[i];
-
-        // console.log("order console");
-        // let orders1=JSON.stringify(order);
-        // orders1=JSON.parse(orders1)
-        // console.log(orders1)
-
         pdfDoc.text(
           `Order Date: ${order.orderDate}, Shipped Date: ${order.shippedDate}, Status: ${order.status}`
         );
@@ -79,6 +73,7 @@ const customerDetails = async (req, res) => {
           pdfDoc.text("Order Details:");
           order.orderdetails.forEach((orderDetail) => {
             pdfDoc.text(`- Quantity Ordered: ${orderDetail.quantityOrdered}`);
+            pdfDoc.text(`- Product Name: ${orderDetail.product.productName}`);
           });
         } else {
           pdfDoc.text(`No order details found for this order ID`);

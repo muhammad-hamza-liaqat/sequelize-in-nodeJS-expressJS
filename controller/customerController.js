@@ -31,6 +31,12 @@ const customerDetails = async (req, res) => {
             {
               model: OrderDetailsModel,
               attributes: ["quantityOrdered"],
+              include: [
+                {
+                  model: ProductModel,
+                  attributes: ["productName"],
+                },
+              ],
             },
           ],
         },
@@ -69,12 +75,9 @@ const customerDetails = async (req, res) => {
         pdfDoc.text(
           `Order Date: ${order.orderDate}, Shipped Date: ${order.shippedDate}, Status: ${order.status}`
         );
-
         if (order) {
           pdfDoc.text("Order Details:");
           order.orderdetails.forEach((orderDetail) => {
-            // console.log("hello");
-            // console.log(orderDetail);
             pdfDoc.text(`- Quantity Ordered: ${orderDetail.quantityOrdered}`);
           });
         } else {

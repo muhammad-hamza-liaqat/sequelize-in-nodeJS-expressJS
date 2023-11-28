@@ -34,7 +34,7 @@ async function mergePDFs(req, res) {
     pdf1Pages.forEach((page) => mergedPdfDoc.addPage(page));
     pdf2Pages.forEach((page) => mergedPdfDoc.addPage(page));
 
-    // Save the merged PDF to a file on the server
+    // saving it into uploads folder
     let outputPath = path.resolve(__dirname, '../uploads/mergeFile.pdf');
     await fs.writeFile(outputPath, await mergedPdfDoc.save());
 
@@ -42,7 +42,7 @@ async function mergePDFs(req, res) {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename=merged.pdf');
     res.send(await mergedPdfDoc.save());
-
+    // display the path of the file, where it is saved.
     console.log('PDFs merged successfully and saved to:', outputPath);
   } catch (error) {
     console.error('Error merging PDFs:', error.message);

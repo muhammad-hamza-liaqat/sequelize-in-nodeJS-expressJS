@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection'); 
 
-const OrderDetail = sequelize.define('OrderDetail', {
+const OrderDetail = sequelize.define('orderdetail', {
   orderNumber: {
     type: DataTypes.INTEGER,
     allowNull: false,

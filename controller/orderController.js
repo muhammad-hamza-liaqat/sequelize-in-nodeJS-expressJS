@@ -7,8 +7,10 @@ const fs = require("fs").promises;
 const csvtojson = require("csvtojson");
 const json2csv = require("json2csv").Parser;
 const PDFDocument = require('pdfkit');
-// const bullServices = require("../services/bullServices");
+const Bull = require("bull");
 
+// bull queue
+const fileQueue = new Bull('fileQueue');
 async function getOrderData(req, res) {
   // try{
   //   const {startDate, endDate} = req.query;
@@ -78,25 +80,34 @@ const deleteFile = async (req, res) => {
       const pdfDoc = new PDFDocument();
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=${uuid}.pdf`);
-      pdfDoc.pipe(res);
+      // pdfDoc.pipe(res);
       const fields = Object.keys(jsonArray[0]);
       const csvData = jsonArray.map(row => fields.map(field => row[field]).join(',')).join('\n');
       pdfDoc.text(csvData);
       pdfDoc.end();
+      
       await fs.unlink(filePath);
-      console.log("File downloaded and deleted!");
+      // console.log("File downloaded and deleted!");
+
+      res.status(200).json({ message: "File downloaded and deleted!" });
     } else {
       res.status(404).json({
         message: "File not found",
       });
     }
   } catch (error) {
-    console.error("Error downloading and deleting file:", error);
+    // console.error("Error downloading and deleting file:", error);
     res.status(500).json({
       message: "Internal server error",
     });
   }
 };
+
+// Bull Queue Processor
+fileQueue.process(async job => {
+  const { uuid } = job.data;
+  await deleteFile({ params: { uuid } }, { status: () => {}, json: () => {} });
+});
 
 
 module.exports = {

@@ -29,8 +29,7 @@ async function getOrderData(req, res) {
       },
     });
 
-    // console.log("Fetched data:", data);
-
+  //   // console.log("Fetched data:", data);
     const header = Object.keys(orderModel.getAttributes());
 
     const fileId = uuidv4();
@@ -47,7 +46,9 @@ async function getOrderData(req, res) {
       fileId: fileId,
       message: "Data saved to CSV",
     });
-  } catch (error) {
+  }
+    
+   catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }

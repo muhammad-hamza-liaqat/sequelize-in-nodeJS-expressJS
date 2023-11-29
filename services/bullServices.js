@@ -1,13 +1,8 @@
 const Queue = require("bull");
 const Worker = require("bull");
 const QueueScheduler = require("bull");
-// const { Queue, Worker, QueueScheduler } = require('bull');
-const { createCsvWriter } = require('csv-writer').createObjectCsvWriter;
 const orderModel = require('../models/orderModel');
-const { v4: uuidv4 } = require('uuid');
-const path = require('path');
 const Sequelize = require('sequelize');
-
 
 const orderQueue = new Queue('orderQueue', {
   redis: {
@@ -17,14 +12,8 @@ const orderQueue = new Queue('orderQueue', {
 });
 
 const worker = new Worker('orderQueue', async (job) => {
-  const { data, header, filePath } = job.data;
-
-  const csvWriter = createCsvWriter({
-    path: filePath,
-    header: header,
-  });
-
-  await csvWriter.writeRecords(data);
+  const { data, header } = job.data;
+  // You can perform any processing here without writing to CSV
 });
 
 const scheduler = new QueueScheduler('orderQueue');
@@ -34,17 +23,6 @@ worker.on('completed', () => {
   process.exit();
 });
 
-// orderQueue.process(async (job,data)=>{
-//   console.log(job);
-//   const { data1, header, filePath } = job.data;
-
-//   const csvWriter = createCsvWriter({
-//     path: filePath,
-//     header: header,
-//   });
-
-//   await csvWriter.writeRecords(data1);
-// })
 const bullService = {
   addToQueue: async (startDate, endDate) => {
     try {
@@ -58,21 +36,16 @@ const bullService = {
 
       const header = Object.keys(orderModel.getAttributes());
 
-      const fileId = uuidv4();
-      const csvFilePath = path.join(__dirname, '../uploads', `${fileId}.csv`);
-
-      await orderQueue.add('generateCSV', { data, header, filePath: csvFilePath });
+      await orderQueue.add('generateCSV', { data, header });
 
       return {
-        fileId: fileId,
-        message: 'Data saved to CSV',
+        message: 'Data processing completed',
       };
     } catch (error) {
       console.error('Error fetching data:', error);
       throw new Error('Internal server error');
     }
   },
-
 };
 
 module.exports = bullService;

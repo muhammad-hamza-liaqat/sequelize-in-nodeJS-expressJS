@@ -1,9 +1,8 @@
-// services/bullService.js
 const Queue = require("bull");
 const Worker = require("bull");
 const QueueScheduler = require("bull");
 // const { Queue, Worker, QueueScheduler } = require('bull');
-const { createCsvWriter } = require('csv-writer');
+const { createCsvWriter } = require('csv-writer').createObjectCsvWriter;
 const orderModel = require('../models/orderModel');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
@@ -35,6 +34,17 @@ worker.on('completed', () => {
   process.exit();
 });
 
+// orderQueue.process(async (job,data)=>{
+//   console.log(job);
+//   const { data1, header, filePath } = job.data;
+
+//   const csvWriter = createCsvWriter({
+//     path: filePath,
+//     header: header,
+//   });
+
+//   await csvWriter.writeRecords(data1);
+// })
 const bullService = {
   addToQueue: async (startDate, endDate) => {
     try {
@@ -63,20 +73,6 @@ const bullService = {
     }
   },
 
-  deleteFile: async (uuid, res) => {
-    try {
-      const uploadsFolderPath = path.join(__dirname, '../uploads');
-      const filePath = path.join(uploadsFolderPath, `${uuid}.csv`);
-
-      // ... (rest of the code for deleteFile)
-
-    } catch (error) {
-      console.error('Error downloading and deleting file:', error);
-      res.status(500).json({
-        message: 'Internal server error',
-      });
-    }
-  },
 };
 
 module.exports = bullService;

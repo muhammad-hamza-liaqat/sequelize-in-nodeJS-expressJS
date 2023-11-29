@@ -103,7 +103,7 @@ const deleteFile = async (req, res) => {
   }
 };
 
-// Bull Queue Processor
+// adding bull process...
 fileQueue.process(async job => {
   const { uuid } = job.data;
   await deleteFile({ params: { uuid } }, { status: () => {}, json: () => {} });

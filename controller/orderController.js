@@ -29,7 +29,6 @@ async function getOrderData(req, res) {
       },
     });
 
-  //   // console.log("Fetched data:", data);
     const header = Object.keys(orderModel.getAttributes());
 
     const fileId = uuidv4();

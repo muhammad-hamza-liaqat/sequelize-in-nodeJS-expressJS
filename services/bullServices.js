@@ -13,7 +13,6 @@ const orderQueue = new Queue('orderQueue', {
 
 const worker = new Worker('orderQueue', async (job) => {
   const { data, header } = job.data;
-  // You can perform any processing here without writing to CSV
 });
 
 const scheduler = new QueueScheduler('orderQueue');

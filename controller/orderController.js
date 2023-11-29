@@ -4,10 +4,10 @@ const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs").promises;
-// const { addJob } = require("../services/enqueueJobs")
 const csvtojson = require("csvtojson");
 const json2csv = require("json2csv").Parser;
 const PDFDocument = require('pdfkit');
+const downloadData = require("../services/enqueueJobs")
 
 async function getOrderData(req, res) {
   try {
@@ -26,6 +26,7 @@ async function getOrderData(req, res) {
     const header = Object.keys(orderModel.getAttributes());
 
     const fileId = uuidv4();
+    // downloadData(fileId);
     const csvFilePath = path.join(__dirname, "../uploads", `${fileId}.csv`);
 
     const csvWriter = createCsvWriter({

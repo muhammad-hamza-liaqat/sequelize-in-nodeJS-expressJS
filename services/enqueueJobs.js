@@ -1,7 +1,7 @@
 const Queue = require("bull");
 const fs = require("fs");
 const path = require("path");
-const {getOrderData} = require("../controller/orderController");
+const { getOrderData } = require("../controller/orderController");
 
 const downloadQueue = new Queue("csvFile");
 

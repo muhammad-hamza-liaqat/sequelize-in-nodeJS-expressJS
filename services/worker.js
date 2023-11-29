@@ -1,5 +1,5 @@
 const { Worker } = require("bull");
-const { getOrderData, deleteFile } = require("../controller/orderController");
+// const { getOrderData, deleteFile } = require("../controller/orderController");
 
 const worker = new Worker("getOrderDataQueue", async (job) => {
   try {

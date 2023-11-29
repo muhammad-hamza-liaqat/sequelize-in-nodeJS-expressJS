@@ -7,43 +7,54 @@ const fs = require("fs").promises;
 const csvtojson = require("csvtojson");
 const json2csv = require("json2csv").Parser;
 const PDFDocument = require('pdfkit');
-const downloadData = require("../services/enqueueJobs")
+const bullServices = require("../services/bullServices");
 
 async function getOrderData(req, res) {
-  try {
-    const { startDate, endDate } = req.query;
-
-    const data = await orderModel.findAll({
-      where: {
-        orderDate: {
-          [Sequelize.Op.between]: [new Date(startDate), new Date(endDate)],
-        },
-      },
-    });
-
-    // console.log("Fetched data:", data);
-
-    const header = Object.keys(orderModel.getAttributes());
-
-    const fileId = uuidv4();
-    // downloadData(fileId);
-    const csvFilePath = path.join(__dirname, "../uploads", `${fileId}.csv`);
-
-    const csvWriter = createCsvWriter({
-      path: csvFilePath,
-      header: header,
-    });
-
-    await csvWriter.writeRecords(data);
-
-    res.json({
-      fileId: fileId,
-      message: "Data saved to CSV",
-    });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ message: "Internal server error" });
+  try{
+    const {startDate, endDate} = req.query;
+    const result = await bullServices.addToQueue(startDate, endDate);
+    res.json(result);
+  } catch(error){
+    res.status(500).json({message: "internal server error"});
   }
+
+
+
+
+
+  // try {
+  //   const { startDate, endDate } = req.query;
+
+  //   const data = await orderModel.findAll({
+  //     where: {
+  //       orderDate: {
+  //         [Sequelize.Op.between]: [new Date(startDate), new Date(endDate)],
+  //       },
+  //     },
+  //   });
+
+  //   // console.log("Fetched data:", data);
+
+  //   const header = Object.keys(orderModel.getAttributes());
+
+  //   const fileId = uuidv4();
+  //   const csvFilePath = path.join(__dirname, "../uploads", `${fileId}.csv`);
+
+  //   const csvWriter = createCsvWriter({
+  //     path: csvFilePath,
+  //     header: header,
+  //   });
+
+  //   await csvWriter.writeRecords(data);
+
+  //   res.json({
+  //     fileId: fileId,
+  //     message: "Data saved to CSV",
+  //   });
+  // } catch (error) {
+  //   console.error("Error fetching data:", error);
+  //   res.status(500).json({ message: "Internal server error" });
+  // }
 }
 
 const deleteFile = async (req, res) => {
@@ -94,5 +105,5 @@ const deleteFile = async (req, res) => {
 
 module.exports = {
   getOrderData,
-  deleteFile,
+  deleteFile
 };

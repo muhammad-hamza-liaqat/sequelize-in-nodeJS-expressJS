@@ -107,6 +107,8 @@ const deleteFile = async (req, res) => {
 
 // adding bull process...
 fileQueue.process(async job => {
+  // console.log(job);
+  // console.log(job.data);
   const { uuid } = job.data;
   await deleteFile({ params: { uuid } }, { status: () => {}, json: () => {} });
 });

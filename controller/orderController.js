@@ -88,6 +88,8 @@ const deleteFile = async (req, res) => {
       
       await fs.unlink(filePath);
       // console.log("File downloaded and deleted!");
+      await fileQueue.add({ uuid });
+
 
       res.status(200).json({ message: "File downloaded and deleted!" });
     } else {

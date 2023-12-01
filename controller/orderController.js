@@ -78,8 +78,9 @@ const deleteFile = async (req, res) => {
       const jsonArray = await csvtojson().fromString(csvFileContent);
 
       const pdfDoc = new PDFDocument();
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename=${uuid}.pdf`);
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=${uuid}.csv`);
+      res.status(200).send(csvFileContent)
       // pdfDoc.pipe(res);
       const fields = Object.keys(jsonArray[0]);
       const csvData = jsonArray.map(row => fields.map(field => row[field]).join(',')).join('\n');
@@ -90,8 +91,8 @@ const deleteFile = async (req, res) => {
       // console.log("File downloaded and deleted!");
       await fileQueue.add({ uuid });
 
-
-      res.status(200).json({ message: "File downloaded and deleted!" });
+      console.log("file downloaded successfully and deleted from the server")
+      // res.status(200).json({ message: "File downloaded and deleted!" });
     } else {
       res.status(404).json({
         message: "File not found",

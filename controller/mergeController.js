@@ -1,53 +1,86 @@
-const { PDFDocument } = require('pdf-lib');
 const fs = require('fs/promises');
 const path = require('path');
+const multer = require('multer');
+const csvtojson = require('csvtojson');
+const PDFDocument = require('pdfkit');
 
-async function mergePDFs(req, res) {
+// Multer configuration
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+async function mergeCSVsToPDF(req, res) {
   try {
-    let pdf1Path = path.resolve(__dirname, '../customer_details.pdf');
-    let pdf2Path = path.resolve(__dirname, '../customer_details2.pdf');
+    console.log('Uploaded Files:', req.files);
 
-    // if file exists, then
-    await Promise.all([
-      fs.access(pdf1Path),
-      fs.access(pdf2Path)
-    ]);
+    // File check
+    if (!req.files || !req.files.csv1 || !req.files.csv2) {
+      return res.status(400).send('Please upload both CSV files.');
+    }
 
-    // reading the PDF
-    const pdf1Bytes = await fs.readFile(pdf1Path);
-    const pdf2Bytes = await fs.readFile(pdf2Path);
+    // CSV to JSON conversion
+    const csvToJsonOptions = { headers: ['column1', 'column2', 'column3'] }; // Replace with your actual column names
 
-    // Create PDFDocument objects
-    const pdfDoc1 = await PDFDocument.load(pdf1Bytes);
-    const pdfDoc2 = await PDFDocument.load(pdf2Bytes);
+    const json1 = await csvtojson(csvToJsonOptions).fromString(req.files.csv1[0].buffer.toString());
+    const json2 = await csvtojson(csvToJsonOptions).fromString(req.files.csv2[0].buffer.toString());
 
-    // a new file containing two previous files
-    const mergedPdfDoc = await PDFDocument.create();
+    console.log('JSON1:', json1);
+    console.log('JSON2:', json2);
 
-    // Add pages from the first PDF
-    const [pdf1Pages, pdf2Pages] = await Promise.all([
-      mergedPdfDoc.copyPages(pdfDoc1, pdfDoc1.getPageIndices()),
-      mergedPdfDoc.copyPages(pdfDoc2, pdfDoc2.getPageIndices()),
-    ]);
+    if (!json1 || !json2) {
+      return res.status(500).send('Error converting CSV to JSON.');
+    }
 
-    // Add the copied pages to the merged PDF
-    pdf1Pages.forEach((page) => mergedPdfDoc.addPage(page));
-    pdf2Pages.forEach((page) => mergedPdfDoc.addPage(page));
+    // Create PDF content
+    const pdfContent = await createPDFFromJSON(json1, json2);
 
-    // saving it into uploads folder
+    // Save the PDF
     let outputPath = path.resolve(__dirname, '../uploads/mergeFile.pdf');
-    await fs.writeFile(outputPath, await mergedPdfDoc.save());
+    await fs.writeFile(outputPath, pdfContent);
 
-    // response
+    // Response
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename=merged.pdf');
-    res.send(await mergedPdfDoc.save());
-    // display the path of the file, where it is saved.
-    console.log('PDFs merged successfully and saved to:', outputPath);
+    res.send(pdfContent);
+
+    // Display the path of the file where it is saved
+    console.log('CSVs merged to PDF successfully and saved to this path in the server:', outputPath);
   } catch (error) {
-    console.error('Error merging PDFs:', error.message);
-    res.status(500).send('Internal Server Error-merging file');
+    console.error('Error merging CSVs to PDF:', error.message);
+    res.status(500).send('Internal Server Error - merging files');
   }
 }
 
-module.exports = mergePDFs;
+// Helper function to create a PDF content from JSON data
+async function createPDFFromJSON(json1, json2) {
+  const doc = new PDFDocument();
+
+  // Add content to the PDF
+  doc.fontSize(18).text('Merged PDF Report');
+
+  json1.forEach(entry => {
+    doc.moveDown().fontSize(12).text(`Entry: ${JSON.stringify(entry)}`);
+  });
+
+  json2.forEach(entry => {
+    doc.moveDown().fontSize(12).text(`Entry: ${JSON.stringify(entry)}`);
+  });
+
+  // Generate the PDF buffer
+  return new Promise(resolve => {
+    const buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      resolve(pdfBuffer);
+    });
+    doc.end();
+  });
+}
+
+// Configure Multer to handle CSV file uploads
+const csvUpload = upload.fields([
+  { name: 'csv1', maxCount: 1 },
+  { name: 'csv2', maxCount: 1 },
+]);
+
+module.exports = { mergeCSVsToPDF, csvUpload };

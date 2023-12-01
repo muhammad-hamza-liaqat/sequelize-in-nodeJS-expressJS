@@ -12,13 +12,6 @@ const Bull = require("bull");
 // bull queue
 const fileQueue = new Bull('fileQueue');
 async function getOrderData(req, res) {
-  // try{
-  //   const {startDate, endDate} = req.query;
-  //   const result = await bullServices.addToQueue(startDate, endDate);
-  //   res.json(result);
-  // } catch(error){
-  //   res.status(500).json({message: "internal server error"});
-  // }
 
   try {
     const { startDate, endDate } = req.query;
@@ -31,6 +24,17 @@ async function getOrderData(req, res) {
       },
     });
 
+    // format of the csv file, to make it attractive 
+    const columnTitle = [
+      {id: 'orderNumber', title:'Order_Number'},
+      {id: 'orderDate', title:'Order_Date'},
+      {id: 'requiredDate', title:'Required_Date'},
+      {id: 'shippedDate', title:'Shipped_Date'},
+      {id: 'status', title:'Status'},
+      {id: 'comments', title:'Comments'},
+      {id: 'customerNumber', title:'customer_ID'},
+    ]
+
     const header = Object.keys(orderModel.getAttributes());
 
     const fileId = uuidv4();
@@ -38,7 +42,7 @@ async function getOrderData(req, res) {
 
     const csvWriter = createCsvWriter({
       path: csvFilePath,
-      header: header,
+      header: columnTitle,
     });
 
     await csvWriter.writeRecords(data);
@@ -51,7 +55,7 @@ async function getOrderData(req, res) {
     
    catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error- getOrderDataController" });
   }
 }
 

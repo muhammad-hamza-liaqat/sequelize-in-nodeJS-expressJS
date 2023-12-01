@@ -20,3 +20,6 @@ it will download the file in the local machine and delete the file from the serv
 http://localhost:3000/details/customer/:customerNumber => end point to get the details of the one customer
 
 multer added to upload the files to the server
+
+http://localhost:3000/merge/mergefile  add the two csv1 and csv2 in the postman to get tested
+

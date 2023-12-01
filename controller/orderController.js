@@ -26,13 +26,13 @@ async function getOrderData(req, res) {
 
     // format of the csv file, to make it attractive 
     const columnTitle = [
-      {id: 'orderNumber', title:'Order_Number'},
-      {id: 'orderDate', title:'Order_Date'},
-      {id: 'requiredDate', title:'Required_Date'},
-      {id: 'shippedDate', title:'Shipped_Date'},
-      {id: 'status', title:'Status'},
-      {id: 'comments', title:'Comments'},
-      {id: 'customerNumber', title:'customer_ID'},
+      {id: 'orderNumber', title:'Order_Number 📦 '},
+      {id: 'orderDate', title:'Order_Date 📅 '},
+      {id: 'requiredDate', title:'Required_Date ⏰ '},
+      {id: 'shippedDate', title:'Shipped_Date 🚚'},
+      {id: 'status', title:'Status 🛒 '},
+      {id: 'comments', title:'Comments 💬'},
+      {id: 'customerNumber', title:'customer_ID 👤 '},
     ]
 
     const header = Object.keys(orderModel.getAttributes());

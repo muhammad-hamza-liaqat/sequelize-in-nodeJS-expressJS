@@ -1,0 +1,6 @@
+Order_Number 📦 ,Order_Date 📅 ,Required_Date ⏰ ,Shipped_Date 🚚,Status 🛒 ,Comments 💬,customer_ID 👤 
+10100,2003-01-06,2003-01-13,2003-01-10,Shipped,,363
+10101,2003-01-09,2003-01-18,2003-01-11,Shipped,Check on availability.,128
+10102,2003-01-10,2003-01-18,2003-01-14,Shipped,,181
+10103,2003-01-29,2003-02-07,2003-02-02,Shipped,,121
+10104,2003-01-31,2003-02-09,2003-02-01,Shipped,,141

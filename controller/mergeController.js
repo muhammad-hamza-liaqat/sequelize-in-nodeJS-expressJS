@@ -10,7 +10,7 @@ const upload = multer({ storage: storage });
 
 async function mergeCSVsToPDF(req, res) {
   try {
-    console.log("Uploaded Files:", req.files);
+    // console.log("Uploaded Files:", req.files);
 
     // File check
     if (!req.files || !req.files.csv1 || !req.files.csv2) {
@@ -37,8 +37,8 @@ async function mergeCSVsToPDF(req, res) {
       req.files.csv2[0].buffer.toString()
     );
 
-    console.log("JSON1:", json1);
-    console.log("JSON2:", json2);
+    // console.log("JSON1:", json1);
+    // console.log("JSON2:", json2);
 
     if (!json1 || !json2) {
       return res.status(500).send("Error converting CSV to JSON.");
@@ -80,13 +80,13 @@ async function createPDFFromJSON(json1, json2) {
   doc.moveDown();
 
   // Add a table for JSON1
-  addTableToPDF(doc, "JSON 1", json1);
+  addTableToPDF(doc, "<------------------------------------------------->", json1);
 
   // Add a space between tables
   doc.moveDown();
 
   // Add a table for JSON2
-  addTableToPDF(doc, "JSON 2", json2);
+  addTableToPDF(doc, "<------------------------------------------------->", json2);
 
   // Generate the PDF buffer
   return new Promise((resolve) => {

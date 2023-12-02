@@ -68,25 +68,25 @@ async function mergeCSVsToPDF(req, res) {
 }
 
 // Helper function to create a PDF content from JSON data
+// chatgpt help
+// format of the pdf here.
 async function createPDFFromJSON(json1, json2) {
   const doc = new PDFDocument();
 
   // Add content to the PDF
-  doc.fontSize(18).text("Merged PDF Report");
+  doc.fontSize(18).text("Merged PDF Report", { align: 'center' });
 
-  json1.forEach((entry) => {
-    doc
-      .moveDown()
-      .fontSize(12)
-      .text(`‣: ${JSON.stringify(entry)}`);
-  });
+  // Add a space after the title
+  doc.moveDown();
 
-  json2.forEach((entry) => {
-    doc
-      .moveDown()
-      .fontSize(12)
-      .text(`‣: ${JSON.stringify(entry)}`);
-  });
+  // Add a table for JSON1
+  addTableToPDF(doc, "JSON 1", json1);
+
+  // Add a space between tables
+  doc.moveDown();
+
+  // Add a table for JSON2
+  addTableToPDF(doc, "JSON 2", json2);
 
   // Generate the PDF buffer
   return new Promise((resolve) => {
@@ -99,6 +99,31 @@ async function createPDFFromJSON(json1, json2) {
     doc.end();
   });
 }
+
+function addTableToPDF(doc, title, jsonData) {
+  // Set table headers
+  const headers = Object.keys(jsonData[0]);
+
+  // Set column widths
+  const columnWidths = headers.map(() => 150); // Adjust the width based on your needs
+
+  // Add table title
+  doc.fontSize(16).text(title, { align: 'center' });
+  doc.moveDown();
+
+  // Draw table headers
+  doc.fontSize(12).font('Helvetica-Bold').text(headers.join(" "), { align: 'center' });
+  
+  // Draw table rows
+  jsonData.forEach((entry) => {
+    const row = headers.map((header) => entry[header]);
+    doc.fontSize(12).font('Helvetica').text(row.join(" "), { align: 'center' });
+  });
+
+  // Add space after the table
+  doc.moveDown();
+}
+
 
 // Configure Multer to handle CSV file uploads
 const csvUpload = upload.fields([

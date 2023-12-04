@@ -78,15 +78,25 @@ async function createPDFFromJSON(json1, json2) {
 
   // Add a space after the title
   doc.moveDown();
+  // aading the logo
+  const logoPath= path.resolve(__dirname, "../public/images/a4.jpg");
+  doc.moveTo(0, 0);
+  doc.image(logoPath, { width: 100, x: 50, y:50 });
+
+  // doc.image(logoPath, { width: 100, align: "left", valign: "top" });
+  doc.moveDown();
+
 
   // Add a table for JSON1
   addTableToPDF(doc, "<------------------------------------------------->", json1);
+
 
   // Add a space between tables
   doc.moveDown();
 
   // Add a table for JSON2
   addTableToPDF(doc, "<------------------------------------------------->", json2);
+
 
   // Generate the PDF buffer
   return new Promise((resolve) => {
